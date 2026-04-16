@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QGridLayout, QPushButton, QFileDialog,
                              QLabel, QSlider, QListWidget, QListWidgetItem,
                              QMessageBox, QInputDialog, QLineEdit, QDialog,
-                             QDialogButtonBox)
+                             QDialogButtonBox, QTabWidget, QGroupBox, QComboBox)
 from PyQt5.QtCore import Qt, QUrl, QTimer, pyqtSignal, QObject
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtGui import QFont, QIcon, QPixmap, QPainter, QBrush, QPen, QColor, QKeySequence
@@ -53,7 +53,16 @@ class LanguageManager:
                 "global_hotkeys": "Глобальные горячие клавиши",
                 "hotkey_works": "Горячие клавиши работают даже когда приложение не активно",
                 "no_hotkeys": "Нет назначенных глобальных горячих клавиш",
-                "language": "Язык"
+                "language": "Язык",
+                "settings": "Настройки",
+                "theme": "Тема",
+                "black": "Черная",
+                "white": "Белая",
+                "green": "Зеленая",
+                "blue": "Синяя",
+                "pink": "Розовая",
+                "save_settings": "Сохранить настройки",
+                "cancel": "Отмена"
             },
             "en": {
                 "add_sound": "Add Sound",
@@ -88,7 +97,16 @@ class LanguageManager:
                 "global_hotkeys": "Global Hotkeys",
                 "hotkey_works": "Hotkeys work even when the app is not active",
                 "no_hotkeys": "No global hotkeys assigned",
-                "language": "Language"
+                "language": "Language",
+                "settings": "Settings",
+                "theme": "Theme",
+                "black": "Black",
+                "white": "White",
+                "green": "Green",
+                "blue": "Blue",
+                "pink": "Pink",
+                "save_settings": "Save Settings",
+                "cancel": "Cancel"
             }
         }
     
@@ -102,6 +120,156 @@ class LanguageManager:
         return False
 
 lang = LanguageManager()
+
+class ThemeManager:
+    themes = {
+        "black": {
+            "bg": "#1e1e1e",
+            "fg": "#ffffff",
+            "button_bg": "#2d2d2d",
+            "button_hover": "#3d3d3d",
+            "border": "#3d3d3d",
+            "accent": "#007acc",
+            "status_bg": "#252526",
+            "scroll_bg": "#2d2d2d",
+            "info_bg": "#2d2d2d"
+        },
+        "white": {
+            "bg": "#f5f5f5",
+            "fg": "#000000",
+            "button_bg": "#e0e0e0",
+            "button_hover": "#d0d0d0",
+            "border": "#cccccc",
+            "accent": "#2196f3",
+            "status_bg": "#e8e8e8",
+            "scroll_bg": "#f0f0f0",
+            "info_bg": "#e8e8e8"
+        },
+        "green": {
+            "bg": "#1b5e20",
+            "fg": "#ffffff",
+            "button_bg": "#2e7d32",
+            "button_hover": "#388e3c",
+            "border": "#4caf50",
+            "accent": "#81c784",
+            "status_bg": "#1b5e20",
+            "scroll_bg": "#2e7d32",
+            "info_bg": "#2e7d32"
+        },
+        "blue": {
+            "bg": "#0d47a1",
+            "fg": "#ffffff",
+            "button_bg": "#1565c0",
+            "button_hover": "#1976d2",
+            "border": "#42a5f5",
+            "accent": "#90caf9",
+            "status_bg": "#0d47a1",
+            "scroll_bg": "#1565c0",
+            "info_bg": "#1565c0"
+        },
+        "pink": {
+            "bg": "#880e4f",
+            "fg": "#ffffff",
+            "button_bg": "#ad1457",
+            "button_hover": "#c2185b",
+            "border": "#e91e63",
+            "accent": "#f48fb1",
+            "status_bg": "#880e4f",
+            "scroll_bg": "#ad1457",
+            "info_bg": "#ad1457"
+        }
+    }
+    
+    current_theme = "white"
+    
+    @classmethod
+    def get_style(cls):
+        theme = cls.themes[cls.current_theme]
+        return f"""
+            QMainWindow {{ background-color: {theme["bg"]}; }}
+            QWidget {{ background-color: {theme["bg"]}; color: {theme["fg"]}; }}
+            QPushButton {{
+                background-color: {theme["button_bg"]};
+                color: {theme["fg"]};
+                border: 1px solid {theme["border"]};
+                border-radius: 8px;
+                padding: 8px 15px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{ background-color: {theme["button_hover"]}; }}
+            QLabel {{ color: {theme["fg"]}; }}
+            QSlider::groove:horizontal {{
+                height: 6px;
+                background: {theme["border"]};
+                border-radius: 3px;
+            }}
+            QSlider::handle:horizontal {{
+                width: 15px;
+                background: {theme["accent"]};
+                border-radius: 7px;
+            }}
+            QSlider::handle:horizontal:hover {{ background: {theme["button_hover"]}; }}
+            QScrollArea {{ border: none; background-color: {theme["bg"]}; }}
+            QScrollBar:vertical {{
+                border: none;
+                background: {theme["scroll_bg"]};
+                width: 10px;
+                border-radius: 5px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: {theme["accent"]};
+                border-radius: 5px;
+            }}
+            QScrollBar::handle:vertical:hover {{ background: {theme["button_hover"]}; }}
+            QListWidget {{
+                background-color: {theme["button_bg"]};
+                color: {theme["fg"]};
+                border: 1px solid {theme["border"]};
+                border-radius: 5px;
+            }}
+            QListWidget::item:hover {{ background-color: {theme["button_hover"]}; }}
+            QListWidget::item:selected {{ background-color: {theme["accent"]}; }}
+            QLineEdit, QComboBox {{
+                background-color: {theme["button_bg"]};
+                color: {theme["fg"]};
+                border: 1px solid {theme["border"]};
+                border-radius: 5px;
+                padding: 5px;
+            }}
+            QDialog {{
+                background-color: {theme["bg"]};
+                color: {theme["fg"]};
+            }}
+            QGroupBox {{
+                border: 1px solid {theme["border"]};
+                border-radius: 5px;
+                margin-top: 10px;
+                padding-top: 10px;
+            }}
+            QGroupBox::title {{
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px 0 5px;
+            }}
+        """
+    
+    @classmethod
+    def get_info_style(cls):
+        theme = cls.themes[cls.current_theme]
+        return f"""
+            background-color: {theme["info_bg"]};
+            color: {theme["fg"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 5px;
+            padding: 10px;
+        """
+    
+    @classmethod
+    def set_theme(cls, theme_name):
+        if theme_name in cls.themes:
+            cls.current_theme = theme_name
+            return True
+        return False
 
 class IconManager:
     @staticmethod
@@ -136,7 +304,7 @@ class SoundPadButton(QPushButton):
         elif self.hotkey:
             icon = IconManager.create_icon("#8e44ad", 48)
         else:
-            icon = IconManager.create_icon("#3498db", 48)
+            icon = IconManager.create_icon(ThemeManager.themes[ThemeManager.current_theme]["accent"], 48)
         self.setIcon(icon)
     
     def start_playing_animation(self):
@@ -163,44 +331,45 @@ class SoundPadButton(QPushButton):
             self.update_icon()
     
     def update_style(self):
+        theme = ThemeManager.themes[ThemeManager.current_theme]
         if self.is_playing:
             self.setToolTip(f"{lang.tr('playing')}... {self.hotkey if self.hotkey else ''}")
-            self.setStyleSheet("""
-                QPushButton {
+            self.setStyleSheet(f"""
+                QPushButton {{
                     background-color: #ffebee;
                     color: #c62828;
                     border: 2px solid #e74c3c;
                     border-radius: 12px;
                     padding: 15px;
                     font-weight: bold;
-                }
-                QPushButton:hover { background-color: #ffcdd2; }
+                }}
+                QPushButton:hover {{ background-color: #ffcdd2; }}
             """)
         elif self.hotkey:
             self.setToolTip(f"{lang.tr('assign_hotkey')}: {self.hotkey}")
-            self.setStyleSheet("""
-                QPushButton {
-                    background-color: #f8f9fa;
-                    color: #2c3e50;
+            self.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {theme["button_bg"]};
+                    color: {theme["fg"]};
                     border: 2px solid #9b59b6;
                     border-radius: 12px;
                     padding: 15px;
                     font-weight: bold;
-                }
-                QPushButton:hover { background-color: #f3e5f5; }
+                }}
+                QPushButton:hover {{ background-color: {theme["button_hover"]}; }}
             """)
         else:
             self.setToolTip(lang.tr("assign_hotkey"))
-            self.setStyleSheet("""
-                QPushButton {
-                    background-color: #f8f9fa;
-                    color: #2c3e50;
-                    border: 2px solid #3498db;
+            self.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {theme["button_bg"]};
+                    color: {theme["fg"]};
+                    border: 2px solid {theme["accent"]};
                     border-radius: 12px;
                     padding: 15px;
                     font-weight: bold;
-                }
-                QPushButton:hover { background-color: #e3f2fd; }
+                }}
+                QPushButton:hover {{ background-color: {theme["button_hover"]}; }}
             """)
     
     def set_hotkey(self, hotkey):
@@ -213,48 +382,73 @@ class HotkeyDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle(lang.tr("assign_hotkey"))
         self.setModal(True)
-        self.setMinimumSize(400, 200)
+        self.setMinimumSize(450, 250)
+        self.setupUI()
+        self.current_key = current_key
+        if current_key:
+            self.key_display.setText(current_key)
+    
+    def setupUI(self):
         layout = QVBoxLayout()
+        
         icon_label = QLabel()
-        icon_label.setPixmap(IconManager.create_icon("#3498db", 64).pixmap(64, 64))
+        icon_label.setPixmap(IconManager.create_icon(ThemeManager.themes[ThemeManager.current_theme]["accent"], 64).pixmap(64, 64))
         icon_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(icon_label)
+        
         instruction = QLabel(
             f"{lang.tr('hotkey_works')}\n\n"
             "Examples: Ctrl+Shift+F, Alt+Z, F1-F12, Ctrl+1, Shift+Space"
         )
         instruction.setAlignment(Qt.AlignCenter)
         instruction.setWordWrap(True)
-        instruction.setStyleSheet("QLabel { padding: 10px; font-size: 12px; background-color: #f0f0f0; border-radius: 5px; }")
+        instruction.setStyleSheet(ThemeManager.get_info_style())
         layout.addWidget(instruction)
+        
         self.key_display = QLineEdit()
         self.key_display.setReadOnly(True)
         self.key_display.setAlignment(Qt.AlignCenter)
         self.key_display.setPlaceholderText("Press any key...")
-        self.key_display.setStyleSheet("""
-            QLineEdit {
+        self.key_display.setMinimumHeight(40)
+        self.key_display.setStyleSheet(f"""
+            QLineEdit {{
                 font-size: 16px;
                 font-weight: bold;
                 padding: 10px;
-                border: 2px solid #3498db;
+                border: 2px solid {ThemeManager.themes[ThemeManager.current_theme]["accent"]};
                 border-radius: 5px;
-                background-color: white;
-            }
+                background-color: {ThemeManager.themes[ThemeManager.current_theme]["button_bg"]};
+                color: {ThemeManager.themes[ThemeManager.current_theme]["fg"]};
+            }}
         """)
         layout.addWidget(self.key_display)
-        self.current_key = current_key
-        if current_key:
-            self.key_display.setText(current_key)
+        
         button_box = QDialogButtonBox()
         clear_btn = QPushButton("Clear")
+        clear_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {ThemeManager.themes[ThemeManager.current_theme]["button_bg"]};
+                color: {ThemeManager.themes[ThemeManager.current_theme]["fg"]};
+                border: 1px solid {ThemeManager.themes[ThemeManager.current_theme]["border"]};
+                border-radius: 5px;
+                padding: 5px 15px;
+            }}
+            QPushButton:hover {{ background-color: {ThemeManager.themes[ThemeManager.current_theme]["button_hover"]}; }}
+        """)
         clear_btn.clicked.connect(self.clear_key)
+        
         cancel_btn = button_box.addButton(QDialogButtonBox.Cancel)
         ok_btn = button_box.addButton(QDialogButtonBox.Ok)
+        
         clear_btn.clicked.connect(self.clear_key)
         ok_btn.clicked.connect(self.accept)
         cancel_btn.clicked.connect(self.reject)
-        layout.addWidget(clear_btn)
-        layout.addWidget(button_box)
+        
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(clear_btn)
+        button_layout.addWidget(button_box)
+        layout.addLayout(button_layout)
+        
         self.setLayout(layout)
         self.key_display.setFocus()
     
@@ -349,6 +543,90 @@ class HotkeyManager(QObject):
         except Exception as e:
             print(f"Error in hotkey callback: {e}")
 
+class SettingsDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.setWindowTitle(lang.tr("settings"))
+        self.setModal(True)
+        self.setMinimumSize(400, 300)
+        self.initUI()
+    
+    def initUI(self):
+        layout = QVBoxLayout()
+        
+        tabs = QTabWidget()
+        
+        theme_tab = QWidget()
+        theme_layout = QVBoxLayout()
+        
+        theme_group = QGroupBox(lang.tr("theme"))
+        theme_group_layout = QVBoxLayout()
+        
+        self.theme_combo = QComboBox()
+        self.theme_combo.addItem(lang.tr("black"), "black")
+        self.theme_combo.addItem(lang.tr("white"), "white")
+        self.theme_combo.addItem(lang.tr("green"), "green")
+        self.theme_combo.addItem(lang.tr("blue"), "blue")
+        self.theme_combo.addItem(lang.tr("pink"), "pink")
+        self.theme_combo.setCurrentText(self.get_theme_name(ThemeManager.current_theme))
+        
+        theme_group_layout.addWidget(self.theme_combo)
+        theme_group.setLayout(theme_group_layout)
+        theme_layout.addWidget(theme_group)
+        
+        language_group = QGroupBox(lang.tr("language"))
+        language_layout = QVBoxLayout()
+        
+        self.lang_combo = QComboBox()
+        self.lang_combo.addItem("Русский", "ru")
+        self.lang_combo.addItem("English", "en")
+        self.lang_combo.setCurrentIndex(0 if lang.current_lang == "ru" else 1)
+        
+        language_layout.addWidget(self.lang_combo)
+        language_group.setLayout(language_layout)
+        theme_layout.addWidget(language_group)
+        
+        theme_layout.addStretch()
+        theme_tab.setLayout(theme_layout)
+        tabs.addTab(theme_tab, lang.tr("settings"))
+        
+        layout.addWidget(tabs)
+        
+        button_box = QDialogButtonBox()
+        save_btn = button_box.addButton(lang.tr("save_settings"), QDialogButtonBox.AcceptRole)
+        cancel_btn = button_box.addButton(lang.tr("cancel"), QDialogButtonBox.RejectRole)
+        save_btn.clicked.connect(self.save_settings)
+        cancel_btn.clicked.connect(self.reject)
+        
+        layout.addWidget(button_box)
+        self.setLayout(layout)
+    
+    def get_theme_name(self, theme_key):
+        theme_names = {
+            "black": lang.tr("black"),
+            "white": lang.tr("white"),
+            "green": lang.tr("green"),
+            "blue": lang.tr("blue"),
+            "pink": lang.tr("pink")
+        }
+        return theme_names.get(theme_key, theme_key)
+    
+    def save_settings(self):
+        new_theme = self.theme_combo.currentData()
+        new_lang = self.lang_combo.currentData()
+        
+        if new_theme != ThemeManager.current_theme:
+            ThemeManager.set_theme(new_theme)
+            self.parent.apply_theme()
+        
+        if new_lang != lang.current_lang:
+            lang.set_language(new_lang)
+            self.parent.update_ui_language()
+        
+        self.parent.save_config()
+        self.accept()
+
 class SoundPadApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -358,12 +636,14 @@ class SoundPadApp(QMainWindow):
         self.current_playing_button = None
         self.volume = 70
         self.play_queue = []
+        self.info_label = None
         self.player.mediaStatusChanged.connect(self.on_media_status_changed)
         self.player.stateChanged.connect(self.on_player_state_changed)
         self.hotkey_manager = HotkeyManager()
         self.hotkey_manager.hotkey_pressed.connect(self.play_sound_by_name)
         self.initUI()
         self.load_config()
+        self.apply_theme()
         self.play_timer = QTimer()
         self.play_timer.timeout.connect(self.process_play_queue)
         self.play_timer.start(50)
@@ -393,39 +673,33 @@ class SoundPadApp(QMainWindow):
         self.add_sound_btn = QPushButton(lang.tr("add_sound"))
         self.add_sound_btn.setIcon(IconManager.create_icon("#2ecc71", 24))
         self.add_sound_btn.clicked.connect(self.add_sound)
-        self.add_sound_btn.setStyleSheet(self.get_button_style("#2ecc71"))
         
         self.remove_sound_btn = QPushButton(lang.tr("remove_sound"))
         self.remove_sound_btn.setIcon(IconManager.create_icon("#e74c3c", 24))
         self.remove_sound_btn.clicked.connect(self.remove_sound)
-        self.remove_sound_btn.setStyleSheet(self.get_button_style("#e74c3c"))
         
         self.stop_all_btn = QPushButton(lang.tr("stop_all"))
         self.stop_all_btn.setIcon(IconManager.create_icon("#f39c12", 24))
         self.stop_all_btn.clicked.connect(self.stop_all_sounds)
-        self.stop_all_btn.setStyleSheet(self.get_button_style("#f39c12"))
         
         self.clear_all_btn = QPushButton(lang.tr("clear_all"))
         self.clear_all_btn.setIcon(IconManager.create_icon("#95a5a6", 24))
         self.clear_all_btn.clicked.connect(self.clear_all_sounds)
-        self.clear_all_btn.setStyleSheet(self.get_button_style("#95a5a6"))
         
         self.show_hotkeys_btn = QPushButton(lang.tr("show_hotkeys"))
         self.show_hotkeys_btn.setIcon(IconManager.create_icon("#1abc9c", 24))
         self.show_hotkeys_btn.clicked.connect(self.show_hotkeys_list)
-        self.show_hotkeys_btn.setStyleSheet(self.get_button_style("#1abc9c"))
         
-        self.lang_btn = QPushButton(lang.tr("language"))
-        self.lang_btn.setIcon(IconManager.create_icon("#3498db", 24))
-        self.lang_btn.clicked.connect(self.switch_language)
-        self.lang_btn.setStyleSheet(self.get_button_style("#3498db"))
+        self.settings_btn = QPushButton(lang.tr("settings"))
+        self.settings_btn.setIcon(IconManager.create_icon("#9b59b6", 24))
+        self.settings_btn.clicked.connect(self.open_settings)
         
         control_panel.addWidget(self.add_sound_btn)
         control_panel.addWidget(self.remove_sound_btn)
         control_panel.addWidget(self.stop_all_btn)
         control_panel.addWidget(self.clear_all_btn)
         control_panel.addWidget(self.show_hotkeys_btn)
-        control_panel.addWidget(self.lang_btn)
+        control_panel.addWidget(self.settings_btn)
         
         volume_layout = QHBoxLayout()
         volume_icon = QLabel()
@@ -446,10 +720,10 @@ class SoundPadApp(QMainWindow):
         main_layout.addLayout(control_panel)
         
         info_panel = QHBoxLayout()
-        info_label = QLabel(lang.tr("hotkey_works"))
-        info_label.setWordWrap(True)
-        info_label.setStyleSheet("QLabel { color: #7f8c8d; font-size: 11px; padding: 5px; background-color: #fff3cd; border-radius: 5px; }")
-        info_panel.addWidget(info_label)
+        self.info_label = QLabel(lang.tr("hotkey_works"))
+        self.info_label.setWordWrap(True)
+        self.info_label.setStyleSheet(ThemeManager.get_info_style())
+        info_panel.addWidget(self.info_label)
         info_panel.addStretch()
         main_layout.addLayout(info_panel)
         
@@ -461,31 +735,26 @@ class SoundPadApp(QMainWindow):
         scroll_area = QScrollArea()
         scroll_area.setWidget(scroll_widget)
         scroll_area.setWidgetResizable(True)
-        scroll_area.setStyleSheet("""
-            QScrollArea { border: none; background-color: #f0f2f5; }
-            QScrollBar:vertical { border: none; background: #e0e0e0; width: 10px; border-radius: 5px; }
-            QScrollBar::handle:vertical { background: #3498db; border-radius: 5px; }
-        """)
         main_layout.addWidget(scroll_area)
         
         self.status_label = QLabel(f"{lang.tr('ready')} | {lang.tr('hotkey_works')}")
-        self.status_label.setStyleSheet("QLabel { padding: 10px; background-color: #2c3e50; color: white; font-weight: bold; border-radius: 5px; }")
+        self.status_label.setStyleSheet(f"QLabel {{ padding: 10px; background-color: {ThemeManager.themes[ThemeManager.current_theme]['status_bg']}; color: {ThemeManager.themes[ThemeManager.current_theme]['fg']}; font-weight: bold; border-radius: 5px; }}")
         main_layout.addWidget(self.status_label)
-        
-        self.setStyleSheet("""
-            QMainWindow { background-color: #f0f2f5; }
-            QPushButton { font-size: 12px; font-weight: bold; padding: 8px 15px; border-radius: 8px; }
-            QSlider::groove:horizontal { height: 6px; background: #bdc3c7; border-radius: 3px; }
-            QSlider::handle:horizontal { width: 15px; background: #3498db; border-radius: 7px; }
-        """)
     
-    def switch_language(self):
-        if lang.current_lang == "ru":
-            lang.set_language("en")
-        else:
-            lang.set_language("ru")
-        self.update_ui_language()
-        self.status_label.setText(f"{lang.tr('ready')} | {lang.tr('hotkey_works')}")
+    def apply_theme(self):
+        self.setStyleSheet(ThemeManager.get_style())
+        theme = ThemeManager.themes[ThemeManager.current_theme]
+        self.status_label.setStyleSheet(f"QLabel {{ padding: 10px; background-color: {theme['status_bg']}; color: {theme['fg']}; font-weight: bold; border-radius: 5px; }}")
+        
+        if self.info_label:
+            self.info_label.setStyleSheet(ThemeManager.get_info_style())
+        
+        for button in self.sounds.keys():
+            button.update_style()
+    
+    def open_settings(self):
+        dialog = SettingsDialog(self)
+        dialog.exec_()
     
     def update_ui_language(self):
         self.add_sound_btn.setText(lang.tr("add_sound"))
@@ -493,27 +762,14 @@ class SoundPadApp(QMainWindow):
         self.stop_all_btn.setText(lang.tr("stop_all"))
         self.clear_all_btn.setText(lang.tr("clear_all"))
         self.show_hotkeys_btn.setText(lang.tr("show_hotkeys"))
-        self.lang_btn.setText(lang.tr("language"))
+        self.settings_btn.setText(lang.tr("settings"))
+        self.status_label.setText(f"{lang.tr('ready')} | {lang.tr('hotkey_works')}")
+        
+        if self.info_label:
+            self.info_label.setText(lang.tr("hotkey_works"))
+        
         for button in self.sounds.keys():
             button.update_style()
-    
-    def get_button_style(self, color):
-        return f"""
-            QPushButton {{
-                background-color: {color};
-                color: white;
-                border: none;
-                border-radius: 8px;
-                padding: 8px 15px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{ background-color: {self.darken_color(color)}; }}
-        """
-    
-    def darken_color(self, color):
-        colors = {"#2ecc71": "#27ae60", "#e74c3c": "#c0392b", "#f39c12": "#e67e22", 
-                  "#95a5a6": "#7f8c8d", "#1abc9c": "#16a085", "#3498db": "#2980b9"}
-        return colors.get(color, color)
     
     def register_global_hotkey(self, button):
         if not GLOBAL_HOTKEY_AVAILABLE or not button.hotkey:
@@ -784,7 +1040,7 @@ class SoundPadApp(QMainWindow):
             layout = QVBoxLayout()
             info_label = QLabel(lang.tr("hotkey_works"))
             info_label.setWordWrap(True)
-            info_label.setStyleSheet("QLabel { padding: 10px; background-color: #d4edda; border-radius: 5px; }")
+            info_label.setStyleSheet(ThemeManager.get_info_style())
             layout.addWidget(info_label)
             list_widget = QListWidget()
             for hotkey, button in sorted(self.hotkeys.items()):
@@ -795,7 +1051,16 @@ class SoundPadApp(QMainWindow):
             close_btn = QPushButton(lang.tr("close"))
             close_btn.setIcon(IconManager.create_icon("#3498db", 16))
             close_btn.clicked.connect(dialog.accept)
-            close_btn.setStyleSheet("QPushButton { background-color: #3498db; color: white; padding: 8px; border-radius: 5px; }")
+            close_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {ThemeManager.themes[ThemeManager.current_theme]["button_bg"]};
+                    color: {ThemeManager.themes[ThemeManager.current_theme]["fg"]};
+                    border: 1px solid {ThemeManager.themes[ThemeManager.current_theme]["border"]};
+                    border-radius: 5px;
+                    padding: 8px;
+                }}
+                QPushButton:hover {{ background-color: {ThemeManager.themes[ThemeManager.current_theme]["button_hover"]}; }}
+            """)
             layout.addWidget(close_btn)
             dialog.setLayout(layout)
             dialog.exec_()
@@ -804,7 +1069,13 @@ class SoundPadApp(QMainWindow):
     
     def save_config(self):
         try:
-            config = {"sounds": {}, "hotkeys": {}, "volume": self.volume}
+            config = {
+                "sounds": {},
+                "hotkeys": {},
+                "volume": self.volume,
+                "theme": ThemeManager.current_theme,
+                "language": lang.current_lang
+            }
             for button, path in self.sounds.items():
                 config["sounds"][button.text()] = path
                 if button.hotkey:
@@ -822,9 +1093,16 @@ class SoundPadApp(QMainWindow):
                 sounds_data = config.get("sounds", {})
                 hotkeys_data = config.get("hotkeys", {})
                 volume = config.get("volume", 70)
+                theme = config.get("theme", "white")
+                language = config.get("language", "ru")
+                
+                ThemeManager.set_theme(theme)
+                lang.set_language(language)
+                
                 self.volume = volume
                 self.volume_slider.setValue(volume)
                 self.player.setVolume(volume)
+                
                 for name, path in sounds_data.items():
                     if os.path.exists(path):
                         hotkey = hotkeys_data.get(name)
@@ -839,6 +1117,8 @@ class SoundPadApp(QMainWindow):
                         if hotkey:
                             self.register_global_hotkey(button)
                 self.status_label.setText(f"Loaded {len(sounds_data)} sounds with {len(hotkeys_data)} hotkeys")
+                self.update_ui_language()
+                self.apply_theme()
         except Exception as e:
             print(f"Load error: {e}")
     
